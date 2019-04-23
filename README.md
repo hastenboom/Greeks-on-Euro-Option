@@ -1,0 +1,2 @@
+# Greeks-on-Euro-Option
+The following codes collaborate with risk management, it's helpful in figuring out delta, gamma, vega, payoff, value in Euro option. Others Greeks, rho for instance, are not available so far since I've not fully comprehended the approaches to derive them in mathematics(they do exist in our text book, however). Another reason is that those greeks accessible at present are sufficient for the case analysis since the collar option virtually not relys on Greeks but implied volatility.  
