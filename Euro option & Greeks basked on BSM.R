@@ -1,110 +1,77 @@
 #This function only contain the results of vega,delta,gamma
-s=50:150;  K=105;  K_p=95;  K_c=105;  sigma=0.2;  r=0.05; inte=1
+s=50:150;  K=51;  K_p=95;  K_c=105;  sigma=0.28;  r=0.06; inte=9/12
 #The following codes collaborate with risk management, it's helpful in figuring out delta, gamma, vega, payoff, value in Euro option. Others Greeks, rho for instance, are not available so far since I've not fully comprehended the approaches to derive them in mathematics(they do exist in our text book, however). Another reason is that those greeks accessible at present are sufficient for the case analysis since the collar option virtually not relys on Greeks but implied volatility.
 
-greeks=function(s,K,sigma,r,inte,result,type)
+greeks=function(s,K,sigma,r,inte,result,ty)
 {
-  if(type=="call")
+  d1=(log(s/K)+(r+(sigma^2/2))*inte)/(sigma*sqrt(inte))
+  d2=d1-sigma*sqrt(inte)
+  #--------------------------
+  if(result=="payoff")
   {
-
-
-    d1_c=(log(s/K)+（r+sigma^2/2)*(inte))/(sigma*sqrt(inte))
-    d2_c=d1_c-sigma*sqrt(inte);
-    N_d1_c=pnorm(d1_c,0,1)
-    N_d2_c=pnorm(d2_c,0,1)
-    
-    if(result=="payoff")
+    if(ty=="call")
     {
-      payoff=NULL;
+      payoff=NA;
       for(i in 1:length(s))
       {
         payoff[i]=max(s[i]-K,0)
       }
-      plot(s,payoff,type="l",main="payoff")
-
+      payoff
     }
-    payoff
-
-    if(result=="value")
+    else if(ty=="put")
     {
-      c=s*N_d1_c - K*exp(1)^(-r*inte)*N_d2_c
-      plot(s,c,type="l",main="value")
-
-    }
-    c
-
-    if(result=="delta")
-    {
-      delta=N_d1_c
-      plot(s,delta,type="l",main="delta")
-
-    }
-      delta
-
-    if(result=="gamma")
-    {
-      gamma=(1/sqrt(2*pi)*exp(1)^(-d1_c^2/2))/(s*sigma*sqrt(inte))
-      plot(s,gamma,type="l",main="gamma")
-    }
-      gamma
-
-    if(result=="vega")
-    {
-      vega=s*sqrt(inte)*(1/sqrt(2*pi)*exp(1)^(-d1_c^2/2))
-      plot(s,vega,type="l",main="vega")
-    }
-      vega
-
-
-  }
-  if(type=="put")
-  {
-    d1_p=(log(s/K_p)+（r+sigma^2/2)*(inte))/(sigma*sqrt(inte))
-    d2_p=d1_p-sigma*sqrt(inte);
-    N_d1_p=pnorm(-d1_p,0,1)
-    N_d2_p=pnorm(-d2_p,0,1)
-
-    if(result=="payoff")
-    {
-      payoff=NULL;
+      payoff=NA;
       for(i in 1:length(s))
       {
         payoff[i]=max(K-s[i],0)
       }
-      plot(s,payoff,type="l",main="payoff")
-
+      payoff
     }
-    payoff
-
-    if(result=="value")
+  }
+  #-------------------------
+  else if(result=="value")
+  {
+    if(ty=="call")
     {
-      p=K*exp(1)^(-r*inte)*N_d2_p - s*N_d1_p
-      plot(s,p,type="l",main="value")
-
+      c=s*pnorm(d1,0,1)-K*exp(1)^(-r*inte)*pnorm(d2,0,1)
+      c
     }
-    p
-
-    if(result=="delta")
+    else if(ty=="put")
     {
-      delta=-N_d1_p
-      plot(s,delta,type="l",main="delta")
-
+      p=K*exp(1)^(-r*inte)*pnorm(-d2,0,1)-s*pnorm(-d1,0,1)
+      p
     }
-    delta
-
-    if(result=="gamma")
+  }
+  #-----------------------
+  else if(result=="delta")
+  {
+    if(ty=="call")
     {
-      gamma=(1/sqrt(2*pi)*exp(1)^(-d1_p^2/2))/(s*sigma*sqrt(inte))
-      plot(s,gamma,type="l",main="gamma")
+      delta_c=pnorm(d1,0,1)
+      delta_c
     }
-    gamma
-
-    if(result=="vega")
+    else if(ty=="put")
     {
-      vega_p=s*sqrt(inte)*(1/sqrt(2*pi)*exp(1)^(-d1_p^2/2))
-      plot(s,vega,type="l",main="vega")
+      delta_p=pnorm(d1,0,1)-1
+      delta_p
     }
-    vega
-
+  }
+  #----------------------
+  else if(result=="gamma")
+  {
+    if(ty=="call"| ty=="put")
+    {
+      gamma=(exp(1)^(-0.5*d1^2))/(s*sigma*sqrt(2*pi*inte))
+      gamma
+    }
+  }
+  #---------------------
+  else if(result=="vega")
+  {
+    if(ty=="call"| ty=="put")
+    {
+      vega=s*sqrt(inte)*(exp(1)^(-d1^2/2))/sqrt(2*pi)
+      vega
+    }
   }
 }
