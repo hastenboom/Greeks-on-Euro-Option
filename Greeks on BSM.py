@@ -108,5 +108,5 @@ greeks_melt.variable=greeks_melt.variable.str.replace('_p',' ')
 
 (ggplot(greeks_melt,aes('price','value',color='type'))+
  geom_line(size=1.5)+
- facet_wrap('~variable',nrow=3,ncol=2,shrink = 'FALSE'))
+ facet_wrap('~variable',nrow=3,ncol=2,scales = "free"))
 
